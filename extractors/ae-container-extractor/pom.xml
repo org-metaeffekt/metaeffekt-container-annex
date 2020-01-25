@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.metaeffekt.container.annex</groupId>
+        <artifactId>ae-extractors</artifactId>
+        <version>HEAD-SNAPSHOT</version>
+    </parent>
+
+	<artifactId>ae-container-extractor</artifactId>
+	<packaging>jar</packaging>
+
+    <properties>
+        <artifact.inventory.enabled>false</artifact.inventory.enabled>
+
+        <container.id>005-qt-base:1.0.0</container.id>
+        <container.os>debian</container.os>
+
+        <ae.extractor.analysis.dir>${project.build.directory}/classes/analysis</ae.extractor.analysis.dir>
+    </properties>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>1.6.0</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.metaeffekt.core</groupId>
+                    <artifactId>ae-inventory-maven-plugin</artifactId>
+                    <version>${project.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-container-scripts</id>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.metaeffekt.core</groupId>
+                                    <artifactId>ae-inventory-maven-plugin</artifactId>
+                                    <version>${project.version}</version>
+                                </artifactItem>
+                            </artifactItems>
+                            <includes>container-extractors/*.sh</includes>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <!-- FIXME: add to plugin management -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>container-extractors-chmod</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <chmod perm="+x">
+                                    <fileSet dir="${project.build.directory}/container-extractors" includes="**/*.sh" />
+                                </chmod>
+                                <mkdir dir="${project.build.directory}/classes/analysis" />
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>run-inventory-extractor</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <phase>compile</phase>
+                        <configuration>
+                            <executable>docker</executable>
+                            <arguments>
+                                <argument>run</argument>
+                                <argument>--rm</argument>
+                                <argument>-i</argument>
+                                <argument>-v</argument>
+                                <argument>${project.build.directory}/container-extractors/:/container-extractors</argument>
+                                <argument>-v</argument>
+                                <argument>${ae.extractor.analysis.dir}/:/analysis</argument>
+                                <argument>--entrypoint</argument>
+
+                                <!-- NOTE: here a image-os-specific extractor can be used -->
+                                <argument>/container-extractors/extract.sh</argument>
+                                <argument>${container.id}</argument>
+                            </arguments>
+                            <outputFile>${ae.extractor.analysis.dir}/extractor-output.txt</outputFile>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>run-file-extractor</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <phase>test-compile</phase>
+                        <configuration>
+                            <executable>docker</executable>
+                            <arguments>
+                                <argument>run</argument>
+                                <argument>--rm</argument>
+                                <argument>-i</argument>
+                                <argument>-v</argument>
+                                <argument>${project.build.directory}/container-extractors/:/container-extractors</argument>
+                                <argument>-v</argument>
+                                <argument>${ae.extractor.analysis.dir}/:/analysis</argument>
+                                <argument>--entrypoint</argument>
+                                <argument>/container-extractors/extract-filtered-files.sh</argument>
+                                <argument>${container.id}</argument>
+                            </arguments>
+                            <outputFile>${ae.extractor.analysis.dir}/docker.out.txt</outputFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.metaeffekt.core</groupId>
+                <artifactId>ae-inventory-maven-plugin</artifactId>
+                <version>HEAD-SNAPSHOT</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>extract-container-inventory</goal>
+                        </goals>
+                        <phase>process-test-resources</phase>
+                        <configuration>
+                            <analysisDir>${ae.extractor.analysis.dir}</analysisDir>
+                            <targetInventoryFile>${ae.extractor.analysis.dir}/${project.artifactId}-inventory.xls</targetInventoryFile>
+                            <filterPackagesWithoutVersion>true</filterPackagesWithoutVersion>
+                            <excludes>
+                                <exclude>/sys/devices/**/*</exclude>
+                                <exclude>/var/cache/ldconfig/**/*</exclude>
+                                <exclude>/var/log/**/*</exclude>
+                                <exclude>/var/lib/dpkg/**/*</exclude>
+                                <exclude>/sys/**/*</exclude>
+                                <exclude>/proc/**/*</exclude>
+                                <exclude>/root/.*</exclude>
+                                <exclude>/etc/**/*</exclude>
+                                <exclude>/.dockerenv</exclude>
+                                <exclude>/usr/lib/locale/locale-archive</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>scan-extracted</id>
+                        <goals>
+                            <goal>create-directory-report</goal>
+                        </goals>
+                        <phase>test-compile</phase>
+                        <configuration>
+                            <inputDirectory>${ae.extractor.analysis.dir}/extracted-files</inputDirectory>
+                            <scanDirectory>${ae.extractor.analysis.dir}/extracted-scan</scanDirectory>
+                            <scanIncludes>**/*</scanIncludes>
+                            <scanExcludes>-none-</scanExcludes>
+                            <sourceInventoryDir>/inventory</sourceInventoryDir>
+                            <sourceInventoryIncludes>ae-container-annex-inventory.xls</sourceInventoryIncludes>
+                            <targetInventoryDir>${ae.extractor.analysis.dir}</targetInventoryDir>
+                            <targetInventoryPath>${project.artifactId}-file-inventory.xls</targetInventoryPath>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>merge-inventory</id>
+                        <goals>
+                            <goal>merge-inventories</goal>
+                        </goals>
+                        <phase>test-compile</phase>
+                        <configuration>
+                            <sourceInventory>${ae.extractor.analysis.dir}/${project.artifactId}-file-inventory.xls</sourceInventory>
+                            <targetInventory>${ae.extractor.analysis.dir}/${project.artifactId}-inventory.xls</targetInventory>
+                        </configuration>
+                    </execution>
+
+                </executions>
+
+                <dependencies>
+                    <dependency>
+                        <groupId>org.metaeffekt.container.annex</groupId>
+                        <artifactId>ae-container-annex-inventory</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-jar</id>
+                        <configuration>
+                            <excludes>
+                                <exclude>--nothing--</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.metaeffekt.core</groupId>
+            <artifactId>ae-inventory-processor</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.metaeffekt.core</groupId>
+            <artifactId>ae-container-validation</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+            <classifier>tests</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+
+    </dependencies>
+
+</project>

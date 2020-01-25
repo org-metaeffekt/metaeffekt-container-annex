@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.metaeffekt.container.annex</groupId>
+    <artifactId>ae-container-annex-pom</artifactId>
+    <version>HEAD-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <url>https://github.com/org-metaeffekt/metaeffekt-container-annex</url>
+
+    <organization>
+        <name>metaeffekt GmbH</name>
+        <url>http://metaeffekt.org</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git://github.com/org-metaeffekt/metaeffekt-container-annex.git</connection>
+        <developerConnection>scm:git:ssh://github.com:org-metaeffekt/metaeffekt-container-annex.git</developerConnection>
+        <url>https://github.com/org-metaeffekt/metaeffekt-container-annex.git</url>
+    </scm>
+
+    <developers>
+        <developer>
+            <email>contact@metaeffekt.org</email>
+            <organization>metaeffekt GmbH</organization>
+            <organizationUrl>http://metaeffekt.com</organizationUrl>
+        </developer>
+    </developers>
+
+    <inceptionYear>2020</inceptionYear>
+
+    <prerequisites>
+        <maven>3.3</maven>
+    </prerequisites>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<!-- FIXME: use tagged versions available in central -->
+        <ae.core.version>HEAD-SNAPSHOT</ae.core.version>
+        <ae.dita.version>HEAD-SNAPSHOT</ae.dita.version>
+
+        <!-- NOTE:
+            Setting this to false enables a project-wide validation. This is not possible without curating the inventory
+            data.
+        -->
+        <artifact.inventory.enabled>false</artifact.inventory.enabled>
+
+        <organization>metaeffekt.org</organization>
+
+        <license.identifier>Apache License 2.0</license.identifier>
+        <license.file>/META-INF/LICENSE</license.file>
+        
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.jdk>1.8</maven.compiler.jdk>
+    </properties>
+
+    <modules>
+        <module>inventory</module>
+        <module>extractors</module>
+        <module>documentation</module>
+    </modules>
+
+    <build>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.6.2</version>
+                    <configuration>
+                        <source>${maven.compiler.source}</source>
+                        <target>${maven.compiler.target}</target>
+                    </configuration>
+                </plugin>
+            
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.0.2</version>
+                    <configuration>
+                        <archive>
+                            <index>false</index>
+                            <addMavenDescriptor>false</addMavenDescriptor>
+                            <manifestEntries>
+                                <Created-By>${organization}</Created-By>
+                                <Built-By>${organization}</Built-By>
+                            </manifestEntries>
+                            <manifestSections>
+                                <manifestSection>
+                                    <name>License Information</name>
+                                    <manifestEntries>
+                                        <License>${license.identifier}</License>
+                                        <License-File>${license.file}</License-File>
+                                    </manifestEntries>
+                                </manifestSection>
+                            </manifestSections>
+                        </archive>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.0.1</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.20</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.metaeffekt.core</groupId>
+                    <artifactId>ae-inventory-maven-plugin</artifactId>
+                    <version>${ae.core.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.metaeffekt.core</groupId>
+                <artifactId>ae-core-modules-dependency-management-pom</artifactId>
+                <version>${ae.core.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <profiles>
+        <profile>
+            <id>generate-source-jar</id>
+            <activation>
+                <file><exists>src</exists></file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <archive>
+                                <index>false</index>
+                                <addMavenDescriptor>false</addMavenDescriptor>
+                                <manifestEntries>
+                                    <Created-By>${organization}</Created-By>
+                                    <Built-By>${organization}</Built-By>
+                                </manifestEntries>
+                                <manifestSections>
+                                    <manifestSection>
+                                        <name>License Information</name>
+                                        <manifestEntries>
+                                            <License>${license.identifier}</License>
+                                            <License-File>${license.file}</License-File>
+                                        </manifestEntries>
+                                    </manifestSection>
+                                </manifestSections>
+                            </archive>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>generate-javadoc-jar</id>
+            <activation>
+                <file><exists>src/main/java</exists></file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.10.4</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <javadocVersion>1.8</javadocVersion>
+                            <additionalparam>-Xdoclint:none</additionalparam>
+                            <bottom>
+                                Licensed under the ${license.identifier} - Copyright &#169; {inceptionYear} &#x2013;
+                                {currentYear} the original author or authors.
+                            </bottom>
+                            <archive>
+                                <index>false</index>
+                                <addMavenDescriptor>false</addMavenDescriptor>
+                                <manifestEntries>
+                                    <Created-By>${organization}</Created-By>
+                                    <Built-By>${organization}</Built-By>
+                                </manifestEntries>
+                                <manifestSections>
+                                    <manifestSection>
+                                        <name>License Information</name>
+                                        <manifestEntries>
+                                            <License>${license.identifier}</License>
+                                            <License-File>${license.file}</License-File>
+                                        </manifestEntries>
+                                    </manifestSection>
+                                </manifestSections>
+                            </archive>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

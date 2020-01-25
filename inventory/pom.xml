@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.metaeffekt.container.annex</groupId>
+        <artifactId>ae-container-annex-pom</artifactId>
+        <version>HEAD-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>ae-container-annex-inventory</artifactId>
+    <packaging>jar</packaging>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.metaeffekt.core</groupId>
+                    <artifactId>ae-inventory-maven-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>update-inventory</id>
+                            <phase>prepare-package</phase>
+                            <goals>
+                                <goal>update-inventory</goal>
+                            </goals>
+                            <configuration>
+                                <sourceInventoryPath>${project.basedir}/src/main/resources/inventory/artifact-inventory.xls</sourceInventoryPath>
+                                <targetInventoryPath>${project.build.directory}/classes/inventory/${project.artifactId}.xls</targetInventoryPath>
+                            </configuration>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <processors>
+                            <processor>
+                                <className>org.metaeffekt.core.inventory.processor.UpdateVersionRecommendationProcessor</className>
+                            </processor>
+                            <processor>
+                                <className>org.metaeffekt.core.inventory.processor.ValidateInventoryProcessor</className>
+                                <properties>
+                                    <licenses.path>${project.build.directory}/classes/licenses</licenses.path>
+                                    <components.path>${project.build.directory}/classes/components</components.path>
+                                    <failOnError>${artifact.inventory.enabled}</failOnError>
+                                </properties>
+                            </processor>
+                        </processors>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>default-jar</id>
+                            <configuration>
+                                <excludes>
+                                    <exclude>**/*.xls.previous.txt</exclude>
+                                    <exclude>**/*.xls.update.txt</exclude>
+                                    <exclude>**/artifact-inventory.xls</exclude>
+                                </excludes>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>org.metaeffekt.core</groupId>
+                <artifactId>ae-inventory-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

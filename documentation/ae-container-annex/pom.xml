@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.metaeffekt.container.annex</groupId>
+        <artifactId>ae-extractors</artifactId>
+        <version>HEAD-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>ae-container-annex</artifactId>
+    <packaging>jar</packaging>
+	
+    <properties>
+		<buildnumber.plugin.version>1.4</buildnumber.plugin.version>
+
+        <asset.name>Workbench BOM</asset.name>
+        <asset.version>0.1</asset.version>
+
+        <product.title>Workbench BOM</product.title>
+        <product.name>${product.title}</product.name>
+        <product.version>0.1</product.version>
+        <product.prefix>ae</product.prefix>
+		<product.watermark.name>Example</product.watermark.name>
+
+		<document.id>XXXX-YYY-ZZ</document.id>
+
+		<organization.name>Organization XYZ</organization.name>
+        <organization.accronym>XYZ</organization.accronym>
+        <organization.address>http://www.organization-x.com</organization.address>
+        <organization.license>NOT APPLICABLE LICENSE</organization.license>
+
+        <document.ditamap>bill-of-materials.ditamap</document.ditamap>
+        <document.name>Bill of Materials</document.name>
+        <document.version>0.1</document.version>
+        <document.status_en>Preview</document.status_en>
+		<document.classifier>bom_en</document.classifier>
+        <document.classification_en>Unrestricted</document.classification_en>
+
+        <dita.source.dir>${basedir}/src/main/dita</dita.source.dir>
+        <dita.project.source.dir>${dita.source.dir}/${project.artifactId}</dita.project.source.dir>
+
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+				<version>${buildnumber.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <phase>none</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                    </execution>
+					<execution>
+                        <id>extract-date-only</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                        <configuration>
+                            <format>{0,date,yyyy-MM-dd}</format>
+                            <items>
+                                <item>timestamp</item>
+                            </items>
+                            <doCheck>false</doCheck>
+                            <doUpdate>false</doUpdate>
+                            <buildNumberPropertyName>asset.date_en</buildNumberPropertyName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>extract-month-year</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                        <configuration>
+                            <format>{0,date,MMMMM, yyyy}</format>
+                            <items>
+                                <item>timestamp</item>
+                            </items>
+                            <doCheck>false</doCheck>
+                            <doUpdate>false</doUpdate>
+                            <buildNumberPropertyName>document.date_en</buildNumberPropertyName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>extract-year</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                        <configuration>
+                            <format>{0,date,yyyy}</format>
+                            <items>
+                                <item>timestamp</item>
+                            </items>
+                            <doCheck>false</doCheck>
+                            <doUpdate>false</doUpdate>
+                            <buildNumberPropertyName>document.copyright.year</buildNumberPropertyName>
+                        </configuration>
+                    </execution>
+                </executions>
+				<configuration>
+				<getRevisionOnlyOnce>true</getRevisionOnlyOnce>
+				</configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.metaeffekt.core</groupId>
+                <artifactId>ae-inventory-maven-plugin</artifactId>
+                <version>${ae.core.version}</version>
+                <executions>
+                    <execution>
+                        <id>create-report</id>
+                        <goals>
+                            <goal>create-inventory-report</goal>
+                        </goals>
+                        <phase>process-sources</phase>
+                        <configuration>
+                            <sourceInventoryDir>${project.build.directory}/inventory-base</sourceInventoryDir>
+                            <sourceInventoryIncludes>**/*.xls</sourceInventoryIncludes>
+
+                            <inventory>${project.build.directory}/inventory-container/analysis/ae-container-extractor-inventory.xls</inventory>
+
+                            <failOnBanned>${artifact.inventory.enabled}</failOnBanned>
+                            <failOnError>${artifact.inventory.enabled}</failOnError>
+                            <failOnUnknown>${artifact.inventory.enabled}</failOnUnknown>
+                            <failOnUnknownVersion>${artifact.inventory.enabled}</failOnUnknownVersion>
+                            <failOnMissingLicense>${artifact.inventory.enabled}</failOnMissingLicense>
+                            <failOnMissingLicenseFile>${artifact.inventory.enabled}</failOnMissingLicenseFile>
+                            <failOnMissingNotice>${artifact.inventory.enabled}</failOnMissingNotice>
+                            <failOnDevelopment>${artifact.inventory.enabled}</failOnDevelopment>
+                            <failOnInternal>${artifact.inventory.enabled}</failOnInternal>
+
+                            <failOnUpgrade>false</failOnUpgrade>
+                            <failOnDowngrade>false</failOnDowngrade>
+
+                            <relativeLicensePath>licenses</relativeLicensePath>
+
+                            <targetLicenseDir>${project.build.directory}/licenses</targetLicenseDir>
+                            <targetComponentDir>${project.build.directory}/components</targetComponentDir>
+
+                            <targetReportDir>${basedir}/src/main/dita/${project.artifactId}/gen</targetReportDir>
+							
+							<!-- FIXME: no enforcement yet -->
+							<vulnerabilityScoreThreshold>7.0</vulnerabilityScoreThreshold>
+							
+	                        <enableBomReport>true</enableBomReport>							
+	                        <enableVulnerabilityReport>true</enableVulnerabilityReport>
+	                        <enableDiffReport>false</enableDiffReport>
+
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.metaeffekt.dita</groupId>
+                <artifactId>ae-dita-maven-plugin</artifactId>
+                <version>${ae.dita.version}</version>
+                <executions>
+
+                    <execution>
+                        <id>clean-dita-content</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean-generated-content</goal>
+                            <goal>clean-aggregated-content</goal>
+                        </goals>
+                    </execution>
+
+                    <execution>
+                        <id>install-dita-toolkit</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>ensure-dita-toolkit</goal>
+                        </goals>
+                    </execution>
+
+                    <execution>
+                        <id>aggregate-dita-content</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>aggregate-content</goal>
+                        </goals>
+                    </execution>
+
+                    <execution>
+                        <id>mark-dita-content-writable</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>mark-generated-content-writable</goal>
+                        </goals>
+                    </execution>
+
+                    <execution>
+                        <id>generate-dita-content</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>generate-content</goal>
+                        </goals>
+                    </execution>
+
+                    <execution>
+                        <id>mark-dita-content-read-only</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>mark-generated-content-read-only</goal>
+                        </goals>
+                    </execution>
+
+                    <execution>
+                        <id>generate-documentation</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>generate-documentation</goal>
+                        </goals>
+                        <configuration>
+                            <documentItems>
+                                <documentItem>
+                                    <ditaMap>${document.ditamap}</ditaMap>
+                                    <artifactId>${project.artifactId}</artifactId>
+                                    <artifactClassifier>en</artifactClassifier>
+                                </documentItem>
+                            </documentItems>
+                            <ditaBuildDir>${project.build.directory}/dita</ditaBuildDir>
+                            <ditaCustomizationDir>${project.build.directory}/branding/ae-dita-branding</ditaCustomizationDir>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>generate-glossary</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>generate-glossary</goal>
+                        </goals>
+                        <configuration>
+                            <language>en</language>
+                            <ditaMap>${document.ditamap}</ditaMap>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <ditaSourceGenDir>${basedir}/src/main/dita/${project.artifactId}/gen</ditaSourceGenDir>
+                    <ditaCleanTemp>false</ditaCleanTemp>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>retrieve-branding</id>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/branding-base</outputDirectory>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.metaeffekt.dita</groupId>
+                                    <artifactId>ae-dita-branding</artifactId>
+                                    <type>zip</type>
+                                    <classifier>resources</classifier>
+                                    <version>${ae.dita.version}</version>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>unpack-reference-inventory</id>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/inventory-base</outputDirectory>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.metaeffekt.container.annex</groupId>
+                                    <artifactId>ae-container-annex-inventory</artifactId>
+                                    <version>${project.version}</version>
+                                </artifactItem>
+                            </artifactItems>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>unpack-container-inventory</id>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/inventory-container</outputDirectory>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.metaeffekt.container.annex</groupId>
+                                    <artifactId>ae-container-extractor</artifactId>
+                                    <version>${project.version}</version>
+                                </artifactItem>
+                            </artifactItems>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <!-- Copy the complete dita.source.dir to the target folder and apply filtering  -->
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Required for copying to the target dita directory. -->
+                            <outputDirectory>${project.build.directory}/dita</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${dita.source.dir}</directory>
+                                    <filtering>true</filtering>
+                                    <includes>
+                                        <include>**/*</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>copy-branding-resources</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/branding</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.directory}/branding-base</directory>
+                                    <filtering>true</filtering>
+                                    <includes>
+                                        <include>**/*</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.metaeffekt.dita</groupId>
+            <artifactId>ae-common-content</artifactId>
+            <version>${ae.dita.version}</version>
+            <classifier>doc</classifier>
+        </dependency>
+    </dependencies>
+
+</project>

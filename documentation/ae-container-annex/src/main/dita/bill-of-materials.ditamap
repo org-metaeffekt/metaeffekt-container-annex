@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE bookmap PUBLIC "-//OASIS//DTD DITA BookMap//EN" "http://docs.oasis-open.org/dita/v1.1/OS/dtd/bookmap.dtd">
+<bookmap id="dcc-bill-of-material">
+    <title>
+        <ph>${product.title} ${product.version}</ph>
+    </title>
+    <bookmeta>
+        <category>Bill of Materials</category>
+        <bookrights>
+            <copyrlast>
+                <year>2020</year>
+            </copyrlast>
+            <bookowner>
+                <organization>${organization.name}</organization>
+            </bookowner>
+        </bookrights>
+    </bookmeta>
+
+    <frontmatter>
+        <topicref href="ae-common-content/imprint/en/tpc_imprint.dita" />
+        <topicref href="ae-common-content/notice/en/tpc_notice.dita" />
+        <booklists>
+            <toc/>
+        </booklists>
+    </frontmatter>
+
+    <chapter href="ae-common-content/bill-of-materials/en/tpc_open-source-based-bom.dita">
+        <topicref href="ae-common-content/components/en/tpc_provider-proprietary-components.dita" />
+        <topicref href="ae-common-content/components/en/tpc_proprietary-components.dita" />
+        <topicref href="ae-common-content/components/en/tpc_oss-components.dita" />
+        <topicref href="ae-common-content/components/en/tpc_public-domain-components.dita" />
+        <topicref href="ae-common-content/bill-of-materials/en/tpc_no-import-export-information.dita" />
+    </chapter>
+
+    <chapter href="ae-common-content/bill-of-materials/en/tpc_bill-of-materials.dita">
+        <topicref href="ae-container-annex/gen/tpc_inventory-artifact-report.dita" />
+        <topicref href="ae-container-annex/gen/tpc_inventory-component-report.dita" />
+        <topicref href="ae-container-annex/gen/tpc_inventory-package-report.dita" />
+	</chapter>
+	
+    <chapter href="ae-container-annex/gen/tpc_inventory-licenses.dita" />
+	
+	<chapter href="ae-container-annex/gen/tpc_inventory-notices.dita" />
+	
+	<chapter href="ae-container-annex/gen/tpc_inventory-vulnerabilities.dita" />
+    
+	<backmatter>
+        <booklists>
+            <tablelist/>
+            <glossarylist>
+                <topicref format="ditamap" href="ae-container-annex/gen/glossary/en/gmap_glossary.ditamap"/>
+            </glossarylist>
+        </booklists>
+    </backmatter>
+
+</bookmap>
