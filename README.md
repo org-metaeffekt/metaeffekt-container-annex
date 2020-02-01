@@ -11,13 +11,18 @@ Project generating a software distribution annex for a docker container image.
 
 ### Clone
 
-`git clone https://github.com/org-metaeffekt/metaeffekt-container-annex.git
+`git clone https://github.com/org-metaeffekt/metaeffekt-container-annex.git`
 
 ### Build
 
+Pull an image if not already available:
+`docker pull alpine:latest`
+
+Change directory:
 `cd metaeffekt-container-annex`
 
-`mvn clean install -Dimage.repo=ubuntu -Dimage.tag=latest`
+Build the project using:
+`mvn clean install -Dimage.repo=alpine -Dimage.tag=latest`
 
 The `image.repo` and `image.tag` parameters can vary, but should match an available docker image. 
 Please note that the project in the current version may not all special cases 
@@ -30,9 +35,12 @@ The project extracts all information available from the container with respect t
 installed packages and additional files and produces a PDF document that lists all
 elements of the container with license metadata.
 
+Check out the resulting PDF in:
+`documentation/ae-container-annex/target/ae-container-annex-HEAD-SNAPSHOT-en.pdf`
+
 ### Disclaimer
 The project does not include further meta data from other sources. Some additional
-meta data is supplied in metaeffekt-container-annex/inventory. This is currently for
+meta data will be supplied in metaeffekt-container-annex/inventory. This is currently for
 illustration purposes, only. All metadata in the inventory have been generated using
 automated tools. No review and clearing of the meta data was performed.
 
