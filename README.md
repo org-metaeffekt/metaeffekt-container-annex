@@ -42,7 +42,7 @@ Check out the resulting PDF in:
 
 `documentation/ae-container-annex/target/ae-container-annex-HEAD-SNAPSHOT-en.pdf`
 
-### Disclaimer
+## Disclaimer
 The project does not include further meta data from other sources. Some additional
 meta data will be supplied in metaeffekt-container-annex/inventory. This is currently for
 illustration purposes, only. All metadata in the inventory have been generated using
