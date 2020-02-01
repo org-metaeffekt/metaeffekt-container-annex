@@ -2,6 +2,9 @@ package org.metaeffekt.container.annex;
 
 import org.junit.Test;
 import org.metaeffekt.core.inventory.processor.model.Artifact;
+
+import static org.junit.Assert.assertNotNull;
+import static org.metaeffekt.core.inventory.processor.model.Constants.*;
 import org.metaeffekt.core.test.container.validation.AbstractContainerValidationTest;
 
 import java.io.File;
@@ -15,13 +18,6 @@ import static org.junit.Assert.assertNull;
  */
 public class ContainerInventoryExtractionTest extends AbstractContainerValidationTest {
 
-    String KEY_DERIVED_LICENSE_PACKAGE = "Specified Package License";
-
-    String KEY_TYPE = "Type";
-
-    String TYPE_PACKAGE = "package";
-    String TYPE_FILE = "file";
-
     @Test
     public void testInventory() throws IOException {
         File analysisDir = new File("target/classes/analysis");
@@ -34,16 +30,15 @@ public class ContainerInventoryExtractionTest extends AbstractContainerValidatio
         notNullOrEmpty("Version not set for " + artifact.getId(), artifact.getVersion());
     }
 
-    /**
-     * Override. Debian does not support package level license annotations. Everything is in the copyright files.
-     *
-     * @param artifact
-     */
-    @Override
+    protected void assertCommonAttributes(Artifact artifact) {
+        this.notNullOrEmpty("Id not set for artifact " + artifact.createStringRepresentation(), artifact.getId());
+        this.notNullOrEmpty("Source Project not set for " + artifact.getId(), artifact.get("Source Project"));
+        this.notNullOrEmpty("Type not set for " + artifact.getId(), artifact.get("Type"));
+        //this.nullOrEmpty("License must not be set " + artifact.getId(), artifact.getLicense());
+        this.nullOrEmpty("Latest version must not be set " + artifact.getId(), artifact.getLatestVersion());
+    }
+
     protected void assertArtifactAttributes(Artifact artifact) {
-        if (Objects.equals(artifact.get(KEY_TYPE), TYPE_PACKAGE)) {
-            assertNull(artifact.get(KEY_DERIVED_LICENSE_PACKAGE));
-        }
     }
 
 }

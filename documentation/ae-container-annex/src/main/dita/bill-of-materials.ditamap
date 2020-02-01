@@ -34,13 +34,15 @@
 
     <chapter href="ae-common-content/bill-of-materials/en/tpc_bill-of-materials.dita">
         <topicref href="ae-container-annex/gen/tpc_inventory-artifact-report.dita" />
+<!--
         <topicref href="ae-container-annex/gen/tpc_inventory-component-report.dita" />
+-->
         <topicref href="ae-container-annex/gen/tpc_inventory-package-report.dita" />
 	</chapter>
 	
     <chapter href="ae-container-annex/gen/tpc_inventory-licenses.dita" />
 	
-	<chapter href="ae-container-annex/gen/tpc_inventory-notices.dita" />
+	<chapter href="ae-container-annex/gen/tpc_inventory-notices.dita" keys="license-notices" />
 	
 	<chapter href="ae-container-annex/gen/tpc_inventory-vulnerabilities.dita" />
     

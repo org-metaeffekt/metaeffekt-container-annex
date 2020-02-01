@@ -15,9 +15,6 @@
     <properties>
         <artifact.inventory.enabled>false</artifact.inventory.enabled>
 
-        <container.id>005-qt-base:1.0.0</container.id>
-        <container.os>debian</container.os>
-
         <ae.extractor.analysis.dir>${project.build.directory}/classes/analysis</ae.extractor.analysis.dir>
     </properties>
 
@@ -94,6 +91,22 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>run-image-inspect</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <phase>compile</phase>
+                        <configuration>
+                            <executable>docker</executable>
+                            <arguments>
+                                <argument>inspect</argument>
+                                <argument>${image.id}</argument>
+                            </arguments>
+                            <outputFile>${ae.extractor.analysis.dir}/image-inspect.yaml</outputFile>
+                        </configuration>
+                    </execution>
+
+                    <execution>
                         <id>run-inventory-extractor</id>
                         <goals>
                             <goal>exec</goal>
@@ -110,12 +123,11 @@
                                 <argument>-v</argument>
                                 <argument>${ae.extractor.analysis.dir}/:/analysis</argument>
                                 <argument>--entrypoint</argument>
-
                                 <!-- NOTE: here a image-os-specific extractor can be used -->
                                 <argument>/container-extractors/extract.sh</argument>
-                                <argument>${container.id}</argument>
+                                <argument>${image.id}</argument>
                             </arguments>
-                            <outputFile>${ae.extractor.analysis.dir}/extractor-output.txt</outputFile>
+                            <outputFile>${ae.extractor.analysis.dir}/image-analysis.txt</outputFile>
                         </configuration>
                     </execution>
 
@@ -137,9 +149,9 @@
                                 <argument>${ae.extractor.analysis.dir}/:/analysis</argument>
                                 <argument>--entrypoint</argument>
                                 <argument>/container-extractors/extract-filtered-files.sh</argument>
-                                <argument>${container.id}</argument>
+                                <argument>${image.id}</argument>
                             </arguments>
-                            <outputFile>${ae.extractor.analysis.dir}/docker.out.txt</outputFile>
+                            <outputFile>${ae.extractor.analysis.dir}/image-extracted-files.txt</outputFile>
                         </configuration>
                     </execution>
                 </executions>
@@ -163,13 +175,19 @@
                                 <exclude>/sys/devices/**/*</exclude>
                                 <exclude>/var/cache/ldconfig/**/*</exclude>
                                 <exclude>/var/log/**/*</exclude>
+
+                                <exclude>/var/lib/rpm/**/*</exclude>
                                 <exclude>/var/lib/dpkg/**/*</exclude>
+                                <exclude>/var/lib/pacman/**/*</exclude>
+
                                 <exclude>/sys/**/*</exclude>
                                 <exclude>/proc/**/*</exclude>
                                 <exclude>/root/.*</exclude>
                                 <exclude>/etc/**/*</exclude>
                                 <exclude>/.dockerenv</exclude>
                                 <exclude>/usr/lib/locale/locale-archive</exclude>
+
+                                <exclude>/lib/apk/db/**/*</exclude>
                             </excludes>
                         </configuration>
                     </execution>
@@ -185,10 +203,17 @@
                             <scanDirectory>${ae.extractor.analysis.dir}/extracted-scan</scanDirectory>
                             <scanIncludes>**/*</scanIncludes>
                             <scanExcludes>-none-</scanExcludes>
+                            <enableImplicitUnpack>false</enableImplicitUnpack>
                             <sourceInventoryDir>/inventory</sourceInventoryDir>
                             <sourceInventoryIncludes>ae-container-annex-inventory.xls</sourceInventoryIncludes>
                             <targetInventoryDir>${ae.extractor.analysis.dir}</targetInventoryDir>
                             <targetInventoryPath>${project.artifactId}-file-inventory.xls</targetInventoryPath>
+
+                            <failOnUnknown>false</failOnUnknown>
+                            <failOnUnknownVersion>false</failOnUnknownVersion>
+                            <failOnError>false</failOnError>
+                            <failOnMissingLicense>false</failOnMissingLicense>
+                            <failOnMissingLicenseFile>false</failOnMissingLicenseFile>
                         </configuration>
                     </execution>
 
@@ -204,6 +229,22 @@
                         </configuration>
                     </execution>
 
+                    <execution>
+                        <id>infer-inventory</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>update-inventory</goal>
+                        </goals>
+                        <configuration>
+                            <sourceInventoryPath>${ae.extractor.analysis.dir}/${project.artifactId}-inventory.xls</sourceInventoryPath>
+                            <targetInventoryPath>${ae.extractor.analysis.dir}/${project.artifactId}-inventory.xls</targetInventoryPath>
+                            <processors>
+                                <processor>
+                                    <className>org.metaeffekt.core.inventory.processor.InferMetaDataProcessor</className>
+                                </processor>
+                            </processors>
+                        </configuration>
+                    </execution>
                 </executions>
 
                 <dependencies>

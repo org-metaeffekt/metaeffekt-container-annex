@@ -16,10 +16,10 @@
     <properties>
 		<buildnumber.plugin.version>1.4</buildnumber.plugin.version>
 
-        <asset.name>Workbench BOM</asset.name>
-        <asset.version>0.1</asset.version>
+        <asset.name>Container Image ${image.repo}</asset.name>
+        <asset.version>${image.tag}</asset.version>
 
-        <product.title>Workbench BOM</product.title>
+        <product.title>Product XYZ</product.title>
         <product.name>${product.title}</product.name>
         <product.version>0.1</product.version>
         <product.prefix>ae</product.prefix>
@@ -29,7 +29,7 @@
 
 		<organization.name>Organization XYZ</organization.name>
         <organization.accronym>XYZ</organization.accronym>
-        <organization.address>http://www.organization-x.com</organization.address>
+        <organization.address>http://www.organization-xyz.com</organization.address>
         <organization.license>NOT APPLICABLE LICENSE</organization.license>
 
         <document.ditamap>bill-of-materials.ditamap</document.ditamap>
