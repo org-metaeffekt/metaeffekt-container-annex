@@ -45,7 +45,19 @@ illustration purposes, only. All metadata in the inventory have been generated u
 automated tools. No review and clearing of the meta data was performed.
 
 The current quality level of the data listed in the inventory and annex does not
-meet the requirements for operating or distributing the chosen container.
+meet the requirements for operating or distributing the chosen container. The different
+containers and linux distributions vary strongly in terms of license meta data included
+in the container.
+
+The approach operates on the resulting container image. Individual layers are at the 
+moment not considered. It is general consensus that the `Dockerfile`s for constructing the
+container image should be subject to a in-depth review in the context of a compliance 
+assessment.
 
 ## Feedback
 We are happy to collect your feedback using [contact@metaeffekt.com](mailto:contact@metaeffekt.com).
+
+## Final Note
+The project gives just a glimpse of what is possible with the plugins. We plan to extend the
+example to cover these aspects over time. All is generally driven by the idea of integrating
+the plugins very close to the software build in a continuous integration environment.
