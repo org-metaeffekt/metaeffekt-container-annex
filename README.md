@@ -16,12 +16,15 @@ Project generating a software distribution annex for a docker container image.
 ### Build
 
 Pull an image if not already available:
+
 `docker pull alpine:latest`
 
 Change directory:
+
 `cd metaeffekt-container-annex`
 
 Build the project using:
+
 `mvn clean install -Dimage.repo=alpine -Dimage.tag=latest`
 
 The `image.repo` and `image.tag` parameters can vary, but should match an available docker image. 
@@ -36,6 +39,7 @@ installed packages and additional files and produces a PDF document that lists a
 elements of the container with license metadata.
 
 Check out the resulting PDF in:
+
 `documentation/ae-container-annex/target/ae-container-annex-HEAD-SNAPSHOT-en.pdf`
 
 ### Disclaimer
