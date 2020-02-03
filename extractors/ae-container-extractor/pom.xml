@@ -19,22 +19,6 @@
     </properties>
 
     <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>exec-maven-plugin</artifactId>
-                    <version>1.6.0</version>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.metaeffekt.core</groupId>
-                    <artifactId>ae-inventory-maven-plugin</artifactId>
-                    <version>${project.version}</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -52,7 +36,7 @@
                                 <artifactItem>
                                     <groupId>org.metaeffekt.core</groupId>
                                     <artifactId>ae-inventory-maven-plugin</artifactId>
-                                    <version>${project.version}</version>
+                                    <version>${ae.core.version}</version>
                                 </artifactItem>
                             </artifactItems>
                             <includes>container-extractors/*.sh</includes>
@@ -160,7 +144,6 @@
             <plugin>
                 <groupId>org.metaeffekt.core</groupId>
                 <artifactId>ae-inventory-maven-plugin</artifactId>
-                <version>HEAD-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <goals>
@@ -172,22 +155,24 @@
                             <targetInventoryFile>${ae.extractor.analysis.dir}/${project.artifactId}-inventory.xls</targetInventoryFile>
                             <filterPackagesWithoutVersion>true</filterPackagesWithoutVersion>
                             <excludes>
-                                <exclude>/sys/devices/**/*</exclude>
                                 <exclude>/var/cache/ldconfig/**/*</exclude>
                                 <exclude>/var/log/**/*</exclude>
 
                                 <exclude>/var/lib/rpm/**/*</exclude>
                                 <exclude>/var/lib/dpkg/**/*</exclude>
                                 <exclude>/var/lib/pacman/**/*</exclude>
+                                <exclude>/lib/apk/db/**/*</exclude>
 
                                 <exclude>/sys/**/*</exclude>
                                 <exclude>/proc/**/*</exclude>
                                 <exclude>/root/.*</exclude>
                                 <exclude>/etc/**/*</exclude>
-                                <exclude>/.dockerenv</exclude>
                                 <exclude>/usr/lib/locale/locale-archive</exclude>
 
-                                <exclude>/lib/apk/db/**/*</exclude>
+                                <exclude>**/.lock</exclude>
+                                <exclude>**/lock</exclude>
+
+                                <exclude>/.dockerenv</exclude>
                             </excludes>
                         </configuration>
                     </execution>
@@ -278,14 +263,14 @@
         <dependency>
             <groupId>org.metaeffekt.core</groupId>
             <artifactId>ae-inventory-processor</artifactId>
-            <version>${project.version}</version>
+            <version>${ae.core.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.metaeffekt.core</groupId>
             <artifactId>ae-container-validation</artifactId>
-            <version>${project.version}</version>
+            <version>${ae.core.version}</version>
             <scope>test</scope>
             <classifier>tests</classifier>
         </dependency>

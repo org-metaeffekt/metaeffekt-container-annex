@@ -10,3 +10,8 @@
 **/target
 **/gen
 **/ae-common-content
+
+study
+study/*.md
+*.sh
+

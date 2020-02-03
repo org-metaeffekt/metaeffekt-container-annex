@@ -6,7 +6,7 @@
 
     <parent>
         <groupId>org.metaeffekt.container.annex</groupId>
-        <artifactId>ae-extractors</artifactId>
+        <artifactId>ae-documentation</artifactId>
         <version>HEAD-SNAPSHOT</version>
     </parent>
 
@@ -114,7 +114,6 @@
             <plugin>
                 <groupId>org.metaeffekt.core</groupId>
                 <artifactId>ae-inventory-maven-plugin</artifactId>
-                <version>${ae.core.version}</version>
                 <executions>
                     <execution>
                         <id>create-report</id>
