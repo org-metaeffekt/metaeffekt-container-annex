@@ -308,6 +308,7 @@
                                     <version>${project.version}</version>
                                 </artifactItem>
                             </artifactItems>
+                            <includes>**/*-extractor-inventory.xls</includes>
                             <overWriteSnapshots>true</overWriteSnapshots>
                         </configuration>
                     </execution>

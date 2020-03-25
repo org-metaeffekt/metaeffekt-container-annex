@@ -46,8 +46,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <ae.core.version>0.25.0</ae.core.version>
-        <ae.dita.version>0.23.0</ae.dita.version>
+        <ae.core.version>0.27.0</ae.core.version>
+        <ae.dita.version>0.24.0</ae.dita.version>
 
         <!-- NOTE:
             Setting this to false enables a project-wide validation. This is not possible without curating the inventory
