@@ -2,7 +2,7 @@
 
 ## Overview
 
-DISCLAIMER: the data collected here are just snapshots of the current evaluation (status 02.02.2020).
+DISCLAIMER: the data collected here are just snapshots of the current evaluation (status 02.12.2020).
 
 | Container Image | Number of files not covered by packages | Number of packages  | License Attribution | License Attribution Quality | 
 | :---: | :----: | :----: | :---: | :---: |
@@ -47,6 +47,7 @@ In the above assessment files matching the following ANT pattern are not include
 * `**/.lock`
 * `**/lock`
 * `/.dockerenv`
+* `**/*.pem`
 
 ## Result
 

@@ -169,10 +169,16 @@
                                 <exclude>/etc/**/*</exclude>
                                 <exclude>/usr/lib/locale/locale-archive</exclude>
 
-                                <exclude>**/.lock</exclude>
-                                <exclude>**/lock</exclude>
+                                <exclude>/**/*.lock</exclude>
+                                <exclude>/**/.lock</exclude>
+                                <exclude>/**/lock</exclude>
 
                                 <exclude>/.dockerenv</exclude>
+
+                                <!-- PEM files normally do not contain materials eligible for copyright/licensing -->
+                                <exclude>/**/*.pem</exclude>
+
+                                <exclude>/**/*.pid</exclude>
                             </excludes>
                         </configuration>
                     </execution>
